@@ -1,0 +1,2 @@
+"0","ids_below_80 <- Inspections[Inspections$SCORE <= 80, ""HSISID""]"
+"0","ids_below_80 <- as.list(ids_below_80$HSISID)"

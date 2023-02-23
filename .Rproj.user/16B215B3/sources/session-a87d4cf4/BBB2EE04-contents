@@ -1,0 +1,259 @@
+---
+title: "Assignment 02"
+output:
+  pdf_document:
+    keep_md: TRUE
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, error=TRUE)
+```
+
+# Run the cell below
+
+To run a code cell (i.e.; execute the `R` code inside a RMarkdown file) you can click the play button on the ribbon on the right hand side of the the code chunk. Before you begin click the play button to run the code cell below.
+
+```{r packages, echo=FALSE, include=FALSE, results=FALSE}
+# List of packages require for this assignment
+packages = c("datasets", "tidyverse")
+
+# Load or install and load
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only=TRUE)) {
+      install.packages(x, dependencies=TRUE)
+      library(x, character.only=TRUE)
+    }
+  }
+)
+```
+
+# Assignment 02
+
+## Due: See Date in Moodle
+
+In this assignment we will get familiar with some basic R.
+
+I would like you to attempt each question in the assignment. To get **full credit** on this assignment, you must complete **Level I**, **Level II**, and **Level III**. **Level IV** and **Level V** are **optional** as they give you a chance to work with advanced features in R.
+
+## This Week's Assignment
+
+In this week's assignment, you'll learn how to:
+
+-   access items from an R data structure using `$` and `[ ]` notation.
+
+**Name: Abel Lu**
+
+**Section: 005**
+
+**Date: 1/31/2023**
+
+Before you get started run the code chunk below.
+
+```{r echo=FALSE, include=TRUE, results=FALSE}
+library("tidyverse")
+```
+
+# Level I
+
+In the beginning of this assignment we will work with the `iris` dataset.
+
+**Question 1.** The `head` function can be used to display a specific number of rows from a dataframe. Display the first 5 rows of the `iris` dataset.
+
+**Hint:** Click [here](https://www.geeksforgeeks.org/get-the-first-parts-of-a-data-set-in-r-programming-head-function/) to see an example of how to use the `head` function.
+
+```{r}
+head(iris, 5) # YOUR CODE GOES HERE
+```
+
+**Question 2.** Save the last column of the `iris` dataset to an object named `iris_last_column`.
+
+```{r}
+iris_last_column <- iris$Species # YOUR CODE GOES HERE
+iris_last_column
+```
+
+**Question 3.** Save the first and fourth rows (include all the columns) of the `iris` dataset to an object named `iris_row1_row4`.
+
+```{r}
+iris_row1_row4 <- iris[c(1,4),] # YOUR CODE GOES HERE
+iris_row1_row4
+```
+
+Another built-in dataset in R is `mtcars`. You can read the about the features (i.e. variables) of dataset [here](https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/mtcars).
+
+**Question 4.** List the attributes of the `mtcars` dataset.
+
+```{r}
+attributes(mtcars) # YOUR CODE GOES HERE
+```
+
+# Level II
+
+**Question 5.** Save the column names of the `mtcars` dataset to an object named `mtcars_colnames`.
+
+```{r}
+mtcars_colnames <- names(mtcars) # YOUR CODE GOES HERE
+mtcars_colnames
+```
+
+**Question 6.** Create a `data.frame` according to the following specifications:
+
+-   The first column should be named `team` and contain 'A', 'B', 'C', 'D', 'E'
+
+-   The second column should be named `points` and contain 99, 90, 86, 88, 95
+
+-   The third column should be named `assists` and contain 33, 28, 31, 39, 34
+
+-   The fourth column should be named `rebounds` and contain 30, 28, 24, 24, 28
+
+Name the dataframe `team_stats`.
+
+```{r}
+team <- c('A','B','C','D','E') # YOUR CODE GOES HERE
+points <- c(99,90,86,88,95) # YOUR CODE GOES HERE
+assists <- c(33,28,31,39,34) # YOUR CODE GOES HERE
+rebounds <- c(30,28,24,24,28) # YOUR CODE GOES HERE
+team_stats <- data.frame(team, points, assists, rebounds) # YOUR CODE GOES HERE
+team_stats
+```
+
+**Question 7.** Use `[ ]` notation to access the second and fourth rows, and the `team` and `points` columns, from the `team_stats` `data.frame` you created in **Question 6**. Save this to `team_stats_24_team_points`.
+
+**Note:** You must use `[ ]` notation to earn all the points.
+
+```{r}
+team_stats_24_team_points <- team_stats[c(2,4),c('team','points')] # YOUR CODE GOES HERE
+team_stats_24_team_points
+```
+
+We can use `$` notation to access the values from a column in R `data.frame` object. The column of an R `data.frame` is a vector. Remember that a vector is a 1-dimensional data structure that contains element of the same type. If the data type is numerical, then we can do math with the elements.
+
+Let's explore some functions that are built-in to base R.
+
+| **Function** | **Description**      |
+|--------------|----------------------|
+| `mean()`     | Mean of an object    |
+| `median()`   | Median of an object  |
+| `range()`    | Range of an object   |
+| `min()`      | Minimum of an object |
+| `max()`      | Maximum of an object |
+
+**Question 8.** Find the median value of sepal length from the `iris` dataset. Save this to `med_sepal_length`.
+
+```{r}
+med_sepal_length <- median(iris$Sepal.Length) # YOUR CODE GOES HERE
+med_sepal_length
+```
+
+# Level III
+
+**Question 9.** Calculate the average number of points, assists, and rebounds. Assign these values (in the order they appear in the previous sentence) to a vector named `team_averages`. Make sure the values are rounded to one decimal place.
+
+**Hint:** The documentation for the `round` function can be found [here](https://www.geeksforgeeks.org/rounding-off-values-in-r-language-round-function/).
+
+```{r}
+avg_points <- round(mean(team_stats[,'points']),1)
+avg_assists <- round(mean(team_stats[,'assists']),1)
+avg_rebounds <- round(mean(team_stats[,'rebounds']),1)
+
+team_averages <- c(avg_points, avg_assists, avg_rebounds) # YOUR CODE GOES HERE
+team_averages
+```
+
+## Subsetting
+
+We can use Boolean masks just like we learned in Python. Suppose we are interested in only the observations where the `Petal.Length` is more than 6. We can use a Boolean masks to select only those rows from the `iris` dataset. For example,
+
+    iris$Petal.Length > 6
+
+will return a Boolean array (i.e. an array of `TRUE` and `FALSE`). Then all we need to do is pass this array to the row position when using `[ ]` notation.
+
+    iris[iris$Petal.Length > 6, ]
+
+Notice that there is a blank after the comma. This tells R to return all the columns.
+
+Try it.
+
+```{r results=FALSE}
+iris$Petal.Length > 6
+```
+
+```{r results=FALSE}
+iris[iris$Petal.Length > 6, ]
+```
+
+**Question 10.** Select all the rows from the `iris` dataset where the petal width is less than 0.2. Save this to the object named `small_petal_width`.
+
+```{r}
+small_petal_width <- iris[iris$Petal.Width < 0.2,] # YOUR CODE GOES HERE
+small_petal_width
+```
+
+**Question 11.** Select all the rows from the `iris` dataset where the petal width is at least 2.4 **and** the sepal width is greater than 3. Save this to the object `small_petal_width_large_sepal_width`.
+
+**Hint:** The syntax for **and** is `&` and the symbol for **or** is `|`.
+
+```{r}
+small_petal_large_sepal_width <- iris[iris$Sepal.Width > 3 & iris$Petal.Width >= 2.4,]  # YOUR CODE GOES HERE
+small_petal_large_sepal_width
+```
+
+The `starwars` dataset contains information about, well, Star Wars. The original data has been revised to reflect additional research into gender and sex determination of characters. You can read about the features [here](https://dplyr.tidyverse.org/reference/starwars.html).
+
+**Question 12.** Find all the films in which the character, Chewbacca, has appeared. Save this to the object `chewy`.
+
+```{r}
+chewy <- c(starwars[starwars$name == 'Chewbacca','films']) # YOUR CODE GOES HERE
+chewy
+```
+
+**Question 13.** What type of data structure is `chewy`?
+
+```{r}
+class(chewy) # YOUR CODE GOES HERE
+```
+
+# Level IV
+
+## Matrix
+
+The `state.x77` dataset comes built-in to base R. To get information about this dataset type `?state.x77` into your console.
+
+You should have noticed that this dataset is a matrix.
+
+**Question 14.** Access the row that contains the information about North Carolina from `state.x77` dataset.
+
+```{r}
+state.x77['North Carolina',] # YOUR CODE GOES HERE
+```
+
+# Level V
+
+**Question 15.** Access the population, illiteracy percent, life expectancy, and the percent of high-school graduates for states in the southeast region. The American Association of Geographers has defined the Southeast region to include the following states: Alabama, Florida, Georgia, Kentucky, Maryland, Mississippi, North Carolina, South Carolina, Tennessee, Virginia, and West Virginia.
+
+**Note:** You do not need to save the output to an object.
+
+```{r}
+southeast_states = c('Alabama', 'Florida', 'Georgia', 'Kentucky', 'Maryland', 'Mississippi', 'North Carolina', 'South Carolina', 'Tennessee', 'Virginia', 'West Virginia')
+
+cols_to_access = c('Population', 'Illiteracy', 'Life Exp', 'HS Grad')
+
+state.x77[southeast_states, cols_to_access]
+```
+
+# Submission
+
+Make sure you have run all cells in your assignment so that all output and images/graphs appear in the output. 
+
+**Note:** Please make sure you save the assignment before you knit the file.
+
+Now knit the file into a `.pdf` document. The output will create two files, one will be a `.pdf` document and the other will be a `.md` document. 
+
+When you are done knitting, locate the `.md` document, and upload **__only__** this document to Moodle. Your assignment will now be automatically submitted to Gradescope for grading.
+
+If you have any questions please post them to the Moodle discussion board for this assignment.

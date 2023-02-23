@@ -1,0 +1,206 @@
+---
+title: "Assignment 04"
+output:
+  pdf_document: 
+    keep_md: yes
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, error=TRUE)
+```
+
+# Assignment 04
+
+## Due: See Date in Moodle
+
+In this assignment we will get familiar with some basic R.
+
+To earn **full credit** on this assignment, you must complete **all** questions.
+
+
+## This Week's Assignment
+
+In this week's assignment,
+
+- you will work in groups to summarize a data set with numeric and graphical output. 
+
+- your analysis will be based on the coffee data set. The data comes from the `CORGIS` github `https://corgis-edu.github.io/corgis/csv/coffee/`.
+ 
+- the accompanying sample pdf is not included on this assignment in light of collaboration.
+
+**Question 1.** To complete this assignment you will functions from the `tidyverse`. In particular you will need functions from the `readr`, `dplyr`, and the `ggplot2` packages. Load the the `readr` and `dplyr` packages.
+
+```{r echo=FALSE, include=TRUE, results=FALSE}
+library(readr)
+library(dplyr)
+```
+
+# Load the Dataset
+
+The dataset for this assignment can be found at `https://corgis-edu.github.io/corgis/csv/coffee/`. You can download the dataset from the website or my GitHub repository, then upload it to your RStudio session. Alternatively, you can read it directly in your RStudio session by using the url to the raw file from my GitHub repository.
+
+**Note:** The url for the raw data file on GitHub is 
+          
+          `https://raw.githubusercontent.com/mahmoudharding/dsc295/main/data/coffee.csv`.
+
+**Question 2.** Load the coffee dataset and save it to the object named `coffee`.
+
+```{r}
+url <- "https://raw.githubusercontent.com/mahmoudharding/dsc295/main/data/coffee.csv"
+coffee <- read_csv(url)
+```
+
+Let's get a sense of the what is actually in the coffee dataset by doing some preliminary exploration.
+
+**Question 3.** Use the `colnames` functions to list the names of the columns (i.e. features for each observation).
+
+```{r}
+colnames(coffee)
+```
+**Question 4.** List the dimensions of the `coffee` dataset by using the `dim()` function.
+
+```{r}
+dim(coffee)
+```
+**Question 5.** For the last step of the preliminary analysis, use the `str()` function to review the structure of the dataset.
+
+```{r}
+str(coffee)
+```
+**Question 6.** What years are included in the dataset? 
+
+**Note:** Only list the unique years. The `unique()` function may be useful to complete this task.
+
+```{r}
+unique(coffee$Year)
+```
+**Question 7.** What countries are included in the dataset? 
+
+**Note:** Only list the unique countries. The `unique()` function may be useful to complete this task.
+
+```{r}
+unique(coffee$Location.Country)
+```
+## The Coffee Tasting Process
+
+The coffee tasting and scoring methodology, known as coffee cupping, has been developed by the Specialty Coffee Association. The scores are given to coffees by certified samplers called Q-graders. This method has been adopted by major prominent coffee institutions like the Cup of Excellence auctions. To master the SCA cupping protocol, Q-graders must go through arduous and lengthy training to earn their titles.
+
+In this phase of our analysis we will select the countries and the features we are interested in exploring.
+
+**Question 8.** Choose three different countries from the dataset. Filter the full dataset to select only the rows that correspond to the countries you chose. 
+
+**Note:** You must choose countries that more than 15 observations in the full dataset. For example, Loas (1), Philippines (5) and Peru (9) would not be eligible. 
+
+**Hint:** To filter a datafame you can use the `filter` function from `dplyr` and the chaining operator `%>%` or you can use base R and `[ ]` to create a Boolean mask.
+
+Save the results from filtering to a dataframe named `df`, arranged the by country name in alphabetical order. 
+
+```{r}
+df <- coffee %>%
+  filter(Location.Country %in% c('Mexico', 'United States', 'Brazil')) %>%
+  arrange(Location.Country)
+df
+```
+
+**Question 9.** The `df` dataframe contains all the columns from the original dataset. We want to focus our exploration on a subset of those columns. Select only the name, region, year, aroma, flavor, color and total score columns. Save the results to `df`.
+
+```{r}
+df <- df %>% select(Location.Country, Location.Region, 
+                    Year, Data.Scores.Aroma, Data.Scores.Flavor,
+                    Data.Color, Data.Scores.Total)
+df
+```
+
+**Question 10.** Filter `df` to make separate dataframes for each country you chose in **Question 8.**. Save each dataframe to an object whose name is the name of the country. Then store all three dataframes in a list named `list_of_dfs`.
+
+
+
+```{r}
+brazil_df <- df %>% filter(Location.Country == 'Brazil') # YOUR CODE GOES HERE
+mexico_df <- df %>% filter(Location.Country == 'Mexico') # YOUR CODE GOES HERE
+us_df <- df %>% filter(Location.Country == 'United States') # YOUR CODE GOES HERE
+list_of_dfs <- list(mexico_df, us_df, brazil_df) # YOUR CODE GOES HERE
+list_of_dfs
+```
+
+**Question 11.** Rename each list element in `list_of_dfs` to be the name of the country that corresponds to the name of the dataframe. Use the three letter ISO country code for the name. To complete this question the `names` function is helpful.
+
+```{r}
+names(list_of_dfs) <- c('MEX', 'USA', 'BRA')
+list_of_dfs
+```
+
+Now let's explore the `df` dataframe in more depth. 
+
+Run the code chunk below to see how the `group_by` function can be used to combine observations based on the labels in multiple columns.
+
+```{r}
+df %>% group_by(Location.Country, Year)
+```
+
+You should notice that the countries are grouped by name and year.
+
+**Question 12.** Use the `summarise` function to find the highest aroma score for each country in each year. 
+
+```{r}
+df %>% 
+  group_by(Location.Country, Year) %>%
+  summarise(max(Data.Scores.Aroma))
+```
+
+**Question 13.** List all the unique bean colors are in the `df` dataframe? 
+
+```{r}
+unique(df$Data.Color)
+```
+
+**Question 14.** Which color is the most prevalent?
+
+```{r}
+table(df$Data.Color)
+```
+
+## Specialty Coffee
+
+The coffee cupping score developed by the Specialty Coffee Association goes from 0 to 100. Coffees scoring 80 points or above earn the the label of specialty coffee. Commercial-grade coffee scores range from 60 to 80.
+
+For the next phase of our analysis we will examine the aroma and flavor scores for the complete dataset.
+
+**Question 15.** Save the average aroma and flavor scores from the full `coffee` dataset to objects named `aroma_avg` and `flavor_avg`.
+
+```{r}
+aroma_avg <- mean(coffee$Data.Scores.Aroma, na.rm = TRUE) # YOUR CODE GOES HERE
+flavor_avg <- mean(coffee$Data.Scores.Flavor, na.rm = TRUE) # YOUR CODE GOES HERE
+aroma_avg
+flavor_avg
+```
+
+**Question 16.** Subset the `df` dataframe by selecting the observations that have an aroma and flavor score above the mean aroma and flavor score. 
+
+```{r}
+df <- df %>% subset(Data.Scores.Aroma > aroma_avg & Data.Scores.Flavor > flavor_avg) # YOUR CODE GOES HERE
+df
+```
+
+**Question 17.** Add a column to the `df` dataframe named `grade` that contains the labels "specialty" or "commercial" based on the total score. If the total score is at least 80, then the label should be "specialty", otherwise the label should be "commercial". You should use the `mutate` and the `ifelse()` function to complete this question. 
+
+```{r}
+df$grade <- mutate(df, grade = ifelse(df$Data.Scores.Total >= 80, "specialty", "commercial")) # YOUR CODE GOES HERE
+df$grade
+df
+```
+
+# Submission
+
+Make sure you have run all cells in your assignment so that all output and images/graphs appear in the output. 
+
+**Note:** Please make sure you save the assignment before you knit the file.
+
+Now knit the file into a `.pdf` document. The output will create two files, one will be a `.pdf` document and the other will be a `.md` document. 
+
+When you are done knitting, locate the `.md` document, and upload **__only__** this document to Moodle. Your assignment will now be automatically submitted to Gradescope for grading.
+
+If you have any questions please post them to the Moodle discussion board for this assignment.

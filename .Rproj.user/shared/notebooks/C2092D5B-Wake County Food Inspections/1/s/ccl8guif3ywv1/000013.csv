@@ -1,0 +1,4 @@
+"0","restaurants_below_80 <- Restaurants[Restaurants$HSISID %in% ids_below_80,"
+"0","                              c(""NAME"",""ADDRESS1"", ""CITY"", ""STATE"", ""POSTALCODE"","
+"0","                                ""PHONENUMBER"")]"
+"0","restaurants_below_80"
