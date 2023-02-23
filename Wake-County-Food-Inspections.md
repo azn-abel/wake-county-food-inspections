@@ -1,13 +1,3 @@
----
-title: "Wake County Food Inspections"
-output:
-  pdf_document:
-    keep_md: yes
-date: "02/22/2023"
----
-
-
-
 # Wake County Restaurants and their Sanitation Scores
 
 ## Objective
